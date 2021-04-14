@@ -39,5 +39,18 @@ namespace LMS.Data.Repos
         {
             return (await db.SaveChangesAsync()) >= 0;
         }
+
+
+        public void Remove(Module module)
+        {
+            db.Modules.Remove(module);
+        }
+
+
+        public bool IsExists(int id)
+        {
+            var exists = db.Modules.Any(e => e.Id == id);
+            return exists;
+        }
     }
 }

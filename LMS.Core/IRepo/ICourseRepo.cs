@@ -14,7 +14,9 @@ namespace LMS.Core.IRepo
         Task<Course> GetCourse(int? Id);
         Task<bool> SaveAsync();
         Task AddAsync<T>(T course);
+        void Remove(Course course);
 
+        bool IsExists(int id);
 
     }
 }

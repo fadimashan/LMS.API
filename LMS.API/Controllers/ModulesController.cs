@@ -7,102 +7,110 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using LMS.Core.IRepo;
+using AutoMapper;
+using LMS.Core.Dto;
 
 namespace LMS.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/modules")]
     [ApiController]
     public class ModulesController : ControllerBase
     {
-        private readonly LMSAPIContext _context;
+        private readonly IWorkUnit wu;
+        private readonly IMapper mapper;
 
-        public ModulesController(LMSAPIContext context)
+        public ModulesController(IWorkUnit wu, IMapper mapper)
         {
-            _context = context;
+            this.wu = wu;
+            this.mapper = mapper;
         }
 
         // GET: api/Modules
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Module>>> GetModule()
         {
-            return await _context.Modules.ToListAsync();
+            var module = await wu.ModuleRepo.GetAllModules();
+            var model = mapper.Map<IEnumerable<ModuleDto>>(module);
+            return Ok(model);
         }
 
         // GET: api/Modules/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Module>> GetModule(int id)
+        public async Task<ActionResult<ModuleDto>> GetModule(int id)
         {
-            var @module = await _context.Modules.FindAsync(id);
+            var @module = await wu.ModuleRepo.GetModule(id);
+            var dto = mapper.Map<ModuleDto>(@module);
 
-            if (@module == null)
+            if (dto == null)
             {
                 return NotFound();
             }
 
-            return @module;
+            return dto;
         }
 
         // PUT: api/Modules/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutModule(int id, Module @module)
-        {
-            if (id != @module.Id)
-            {
-                return BadRequest();
-            }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutModule(int id, Module @module)
+        //{
+        //    if (id != @module.Id)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(@module).State = EntityState.Modified;
+        //    _context.Entry(@module).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ModuleExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ModuleExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/Modules
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Module>> PostModule(Module @module)
-        {
-            _context.Modules.Add(@module);
-            await _context.SaveChangesAsync();
+        //[HttpPost]
+        //public async Task<ActionResult<Module>> PostModule(Module @module)
+        //{
+        //    _context.Modules.Add(@module);
+        //    await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
-        }
+        //    return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
+        //}
 
         // DELETE: api/Modules/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
-            var @module = await _context.Modules.FindAsync(id);
+            var @module = await wu.ModuleRepo.GetModule(id);
             if (@module == null)
             {
                 return NotFound();
             }
 
-            _context.Modules.Remove(@module);
-            await _context.SaveChangesAsync();
+            wu.ModuleRepo.Remove(@module);
+            await wu.CompleteAsync();
 
             return NoContent();
         }
 
         private bool ModuleExists(int id)
         {
-            return _context.Modules.Any(e => e.Id == id);
+            return wu.ModuleRepo.IsExists(id);
         }
     }
 }

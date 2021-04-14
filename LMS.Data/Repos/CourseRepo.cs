@@ -38,9 +38,21 @@ namespace LMS.Data.Repos
 
         }
 
+        public void Remove(Course course)
+        {
+             db.Courses.Remove(course);
+        }
+
         public async Task<bool> SaveAsync()
         {
             return (await db.SaveChangesAsync()) >= 0;
+        }
+
+
+        public bool IsExists(int id)
+        {
+            var exists = db.Courses.Any(e => e.Id == id);
+            return exists;
         }
     }
 }

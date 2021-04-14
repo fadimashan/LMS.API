@@ -28,8 +28,8 @@ namespace LMS.Data.Data
             {
                 var moduleOne = new Module()
                 {
-                    Title = "Java",
-                    StartDate = new DateTime(2022, 01, 01),
+                    Title = "Api",
+                    StartDate = new DateTime(2022, 06, 01),
                     CourseId = 1
 
                 };
