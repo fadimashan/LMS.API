@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMS.API", "LMS.API\LMS.API.csproj", "{E8AFD862-CB2A-4CAC-A54B-AFC10ACC30DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMS.Core", "LMS.Core\LMS.Core.csproj", "{DC99A353-98A0-4063-9C26-644004B1256F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMS.Data", "LMS.Data\LMS.Data.csproj", "{D91AD542-6AB0-4E63-9299-3CC28E9A6902}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8AFD862-CB2A-4CAC-A54B-AFC10ACC30DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8AFD862-CB2A-4CAC-A54B-AFC10ACC30DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8AFD862-CB2A-4CAC-A54B-AFC10ACC30DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8AFD862-CB2A-4CAC-A54B-AFC10ACC30DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC99A353-98A0-4063-9C26-644004B1256F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC99A353-98A0-4063-9C26-644004B1256F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC99A353-98A0-4063-9C26-644004B1256F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC99A353-98A0-4063-9C26-644004B1256F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D91AD542-6AB0-4E63-9299-3CC28E9A6902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D91AD542-6AB0-4E63-9299-3CC28E9A6902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D91AD542-6AB0-4E63-9299-3CC28E9A6902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D91AD542-6AB0-4E63-9299-3CC28E9A6902}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {46A3FEB5-0082-4708-A7F6-D35E9EAECC79}
+	EndGlobalSection
+EndGlobal
