@@ -29,9 +29,15 @@ namespace LMS.Data.Repos
             return modules;
         }
 
-        public async Task<Module> GetModule(int? Id)
+        public async Task<Module> GetModule(string title)
         {
-            var module = await db.Modules.FindAsync(Id);
+            var module = await db.Modules.Where(m => m.Title == title).FirstOrDefaultAsync();
+            return module;
+        }
+
+        public async Task<Module> GetModuleById(int id)
+        {
+            var module = await db.Modules.FindAsync(id);
             return module;
         }
 

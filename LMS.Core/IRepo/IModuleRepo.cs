@@ -11,7 +11,8 @@ namespace LMS.Core.IRepo
     {
 
         Task<IEnumerable<Module>> GetAllModules();
-        Task<Module> GetModule(int? Id);
+        Task<Module> GetModule(string title);
+        Task<Module> GetModuleById(int id);
         Task<bool> SaveAsync();
         Task AddAsync<T>(T t);
 

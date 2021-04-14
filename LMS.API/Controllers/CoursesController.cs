@@ -10,6 +10,7 @@ using LMS.Data.Data;
 using LMS.Core.IRepo;
 using AutoMapper;
 using LMS.Core.Dto;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace LMS.API.Controllers
 {
@@ -28,9 +29,9 @@ namespace LMS.API.Controllers
 
         // GET: api/Courses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourse()
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourse(bool includeModules = false)
         {
-            var courses = await wu.CourseRepo.GetAllCourses();
+            var courses = await wu.CourseRepo.GetAllCourses(!includeModules);
             var model = mapper.Map<IEnumerable<CourseDto>>(courses);
 
             return Ok(model);
@@ -44,7 +45,8 @@ namespace LMS.API.Controllers
 
             if (course == null)
             {
-                return NotFound();
+                ModelState.AddModelError("Title", "Course not available");
+                return NotFound(ModelState);
             }
 
             return course;
@@ -99,7 +101,8 @@ namespace LMS.API.Controllers
             var course = await wu.CourseRepo.GetCourse(id);
             if (course == null)
             {
-                return NotFound();
+                ModelState.AddModelError("Title", "Course not available");
+                return NotFound(ModelState);
             }
 
             wu.CourseRepo.Remove(course);
@@ -111,6 +114,56 @@ namespace LMS.API.Controllers
         private bool CourseExists(int id)
         {
             return wu.CourseRepo.IsExists(id);
+        }
+
+        [HttpPatch("{courseId}")]
+        public async Task<ActionResult<CourseDto>> PatchCourse(int courseId, JsonPatchDocument<CourseDto> patchDocument)
+        {
+            var course = await wu.CourseRepo.GetCourse(courseId);
+            if (course is null)
+            {
+                ModelState.AddModelError("Title", "Course not available");
+                return NotFound(ModelState);
+            }
+
+            var model = mapper.Map<CourseDto>(course);
+            patchDocument.ApplyTo(model, ModelState);
+
+            if (!TryValidateModel(model))
+                return BadRequest(ModelState);
+            mapper.Map(model, course);
+
+            if (await wu.CourseRepo.SaveAsync())
+                return Ok(mapper.Map<CourseDto>(course));
+            else
+                return StatusCode(500);
+
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CourseDto>> CreateCourse(CourseDto dto)
+        {
+
+            var exists = wu.CourseRepo.IsTitleExists(dto.Title);
+            if (exists)
+            {
+                ModelState.AddModelError("Title", "Tilte in use");
+                return BadRequest(ModelState);
+            }
+
+
+            var eventDay = mapper.Map<Course>(dto);
+            await wu.CourseRepo.AddAsync(eventDay);
+            if (await wu.CourseRepo.SaveAsync())
+            {
+                var model = mapper.Map<CourseDto>(eventDay);
+                return CreatedAtAction(nameof(GetCourse), new { model.Title }, model);
+            }
+            else
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
         }
     }
 }

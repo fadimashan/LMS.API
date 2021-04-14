@@ -37,14 +37,15 @@ namespace LMS.API.Controllers
 
         // GET: api/Modules/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ModuleDto>> GetModule(int id)
+        public async Task<ActionResult<ModuleDto>> GetModule(string title)
         {
-            var @module = await wu.ModuleRepo.GetModule(id);
+            var @module = await wu.ModuleRepo.GetModule(title);
             var dto = mapper.Map<ModuleDto>(@module);
 
             if (dto == null)
             {
-                return NotFound();
+                ModelState.AddModelError("Title", "Module not available");
+                return NotFound(ModelState);
             }
 
             return dto;
@@ -96,10 +97,11 @@ namespace LMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
-            var @module = await wu.ModuleRepo.GetModule(id);
+            var @module = await wu.ModuleRepo.GetModuleById(id);
             if (@module == null)
             {
-                return NotFound();
+                ModelState.AddModelError("Title", "Module not available");
+                return NotFound(ModelState);
             }
 
             wu.ModuleRepo.Remove(@module);

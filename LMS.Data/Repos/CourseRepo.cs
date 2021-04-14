@@ -25,10 +25,12 @@ namespace LMS.Data.Repos
             await db.AddAsync(t);
         }
 
-        public async Task<IEnumerable<Course>> GetAllCourses()
+        public async Task<IEnumerable<Course>> GetAllCourses(bool include)
         {
-            var courses = await db.Courses.Include(m=> m.Modules).ToListAsync();
-            return courses;
+
+            //var courses = await db.Courses.Include(m => m.Modules).ToListAsync();
+            return include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
+                             await db.Courses.ToListAsync(); ;
         }
 
         public async Task<Course> GetCourse(int? Id)
@@ -40,7 +42,7 @@ namespace LMS.Data.Repos
 
         public void Remove(Course course)
         {
-             db.Courses.Remove(course);
+            db.Courses.Remove(course);
         }
 
         public async Task<bool> SaveAsync()
@@ -52,6 +54,12 @@ namespace LMS.Data.Repos
         public bool IsExists(int id)
         {
             var exists = db.Courses.Any(e => e.Id == id);
+            return exists;
+        }
+
+        public bool IsTitleExists(string title)
+        {
+            var exists = db.Courses.Any(e => e.Title == title);
             return exists;
         }
     }
