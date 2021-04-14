@@ -25,14 +25,14 @@ namespace LMS.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Module>>> GetModule()
         {
-            return await _context.Module.ToListAsync();
+            return await _context.Modules.ToListAsync();
         }
 
         // GET: api/Modules/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Module>> GetModule(int id)
         {
-            var @module = await _context.Module.FindAsync(id);
+            var @module = await _context.Modules.FindAsync(id);
 
             if (@module == null)
             {
@@ -78,7 +78,7 @@ namespace LMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Module>> PostModule(Module @module)
         {
-            _context.Module.Add(@module);
+            _context.Modules.Add(@module);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
@@ -88,13 +88,13 @@ namespace LMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
-            var @module = await _context.Module.FindAsync(id);
+            var @module = await _context.Modules.FindAsync(id);
             if (@module == null)
             {
                 return NotFound();
             }
 
-            _context.Module.Remove(@module);
+            _context.Modules.Remove(@module);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -102,7 +102,7 @@ namespace LMS.API.Controllers
 
         private bool ModuleExists(int id)
         {
-            return _context.Module.Any(e => e.Id == id);
+            return _context.Modules.Any(e => e.Id == id);
         }
     }
 }

@@ -25,14 +25,14 @@ namespace LMS.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetCourse()
         {
-            return await _context.Course.ToListAsync();
+            return await _context.Courses.ToListAsync();
         }
 
         // GET: api/Courses/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Course>> GetCourse(int id)
         {
-            var course = await _context.Course.FindAsync(id);
+            var course = await _context.Courses.FindAsync(id);
 
             if (course == null)
             {
@@ -78,7 +78,7 @@ namespace LMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Course>> PostCourse(Course course)
         {
-            _context.Course.Add(course);
+            _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCourse", new { id = course.Id }, course);
@@ -88,13 +88,13 @@ namespace LMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
-            var course = await _context.Course.FindAsync(id);
+            var course = await _context.Courses.FindAsync(id);
             if (course == null)
             {
                 return NotFound();
             }
 
-            _context.Course.Remove(course);
+            _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -102,7 +102,7 @@ namespace LMS.API.Controllers
 
         private bool CourseExists(int id)
         {
-            return _context.Course.Any(e => e.Id == id);
+            return _context.Courses.Any(e => e.Id == id);
         }
     }
 }
