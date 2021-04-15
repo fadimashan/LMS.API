@@ -10,7 +10,7 @@ namespace LMS.Core.IRepo
     public interface ICourseRepo
     {
 
-        Task<IEnumerable<Course>> GetAllCourses(bool include);
+        Task<IEnumerable<Course>> GetAllCourses(bool include, string name, string date, string filter);
         Task<Course> GetCourse(int? Id);
         Task<bool> SaveAsync();
         Task AddAsync<T>(T course);

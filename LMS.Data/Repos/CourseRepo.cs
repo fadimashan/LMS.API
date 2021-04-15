@@ -25,12 +25,30 @@ namespace LMS.Data.Repos
             await db.AddAsync(t);
         }
 
-        public async Task<IEnumerable<Course>> GetAllCourses(bool include)
+        public async Task<IEnumerable<Course>> GetAllCourses(bool include, string name, string date, string filter)
         {
+            if (name == "title")
+            {
+                return include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.Title).ToListAsync() :
+                            await db.Courses.OrderBy(e => e.Title).ToListAsync(); ;
 
-            //var courses = await db.Courses.Include(m => m.Modules).ToListAsync();
-            return include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
-                             await db.Courses.ToListAsync(); ;
+            }
+            else if (date == "date")
+            {
+                return include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.StartDate).ToListAsync() :
+                            await db.Courses.OrderBy(e => e.StartDate).ToListAsync(); ;
+            }
+            else if(filter != null)
+            {
+                return include ? await db.Courses.Include(m => m.Modules).Where(c=> c.Title.StartsWith(filter)).ToListAsync() :
+                            await db.Courses.Where(c => c.Title.StartsWith(filter)).ToListAsync(); ;
+            }
+            else
+            {
+                //var courses = await db.Courses.Include(m => m.Modules).ToListAsync();
+                return include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
+                                 await db.Courses.ToListAsync();
+            }
         }
 
         public async Task<Course> GetCourse(int? Id)
