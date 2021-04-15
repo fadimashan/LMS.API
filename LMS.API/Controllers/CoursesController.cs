@@ -55,47 +55,27 @@ namespace LMS.API.Controllers
 
 
 
-        // PUT: api/Courses/5
+        //PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutCourse(int id, Course course)
-        //{
-        //    if (id != course.Id)
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CourseDto>> PutCourse(int id, CourseDto dto)
+        {
+            var theCourse = await wu.CourseRepo.GetCourse(id);
 
-        //    _context.Entry(course).State = EntityState.Modified;
+            if(theCourse is null) return StatusCode(StatusCodes.Status404NotFound);
 
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!CourseExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+            mapper.Map(dto, theCourse);
 
-        //    return NoContent();
-        //}
+            if (await wu.CourseRepo.SaveAsync())
+            {
+                return Ok(mapper.Map<CourseDto>(theCourse));
+            }
+            else
+            {
+                return StatusCode(500);
 
-        // POST: api/Courses
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<Course>> PostCourse(Course course)
-        //{
-        //    _context.Courses.Add(course);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetCourse", new { id = course.Id }, course);
-        //}
+            }
+        }
 
         // DELETE: api/Courses/5
         [HttpDelete("{id}")]

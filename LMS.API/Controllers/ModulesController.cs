@@ -53,47 +53,28 @@ namespace LMS.API.Controllers
 
         // PUT: api/Modules/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
         //public async Task<IActionResult> PutModule(int id, Module @module)
-        //{
-        //    if (id != @module.Id)
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpPut("{name}")]
+        public async Task<ActionResult<ModuleDto>> PutCourse(string name, ModuleDto dto)
+        {
+            var module = await wu.ModuleRepo.GetModule(name);
 
-        //    _context.Entry(@module).State = EntityState.Modified;
+            if (module is null) return StatusCode(StatusCodes.Status404NotFound);
 
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ModuleExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+            mapper.Map(dto, module);
 
-        //    return NoContent();
-        //}
+            if (await wu.ModuleRepo.SaveAsync())
+            {
+                return Ok(mapper.Map<ModuleDto>(module));
+            }
+            else
+            {
+                return StatusCode(500);
 
-        // POST: api/Modules
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<Module>> PostModule(Module @module)
-        //{
-        //    _context.Modules.Add(@module);
-        //    await _context.SaveChangesAsync();
+            }
+        }
 
-        //    return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
-        //}
 
-        // DELETE: api/Modules/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
