@@ -49,7 +49,6 @@ namespace LMS.Data.Repos
             }
             else
             {
-                //var courses = await db.Courses.Include(m => m.Modules).ToListAsync();
                 courses = include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
                                  await db.Courses.ToListAsync();
             }

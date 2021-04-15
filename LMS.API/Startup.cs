@@ -31,7 +31,10 @@ namespace LMS.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
+            services.AddControllers(opt => {
+                opt.ReturnHttpNotAcceptable = true;
+                opt.SuppressAsyncSuffixInActionNames = false;
+            })
                 .AddNewtonsoftJson()
                 .AddXmlDataContractSerializerFormatters();
             services.AddSwaggerGen(c =>
