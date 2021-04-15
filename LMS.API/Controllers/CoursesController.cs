@@ -29,9 +29,9 @@ namespace LMS.API.Controllers
 
         // GET: api/Courses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourse(bool includeModules = false, string title = null , string date = null, string filter = null)
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourse([FromQuery] PaginationFilter filter, [FromQuery] bool includeModules = false, string action = null )
         {
-            var courses = await wu.CourseRepo.GetAllCourses(!includeModules, title, date, filter);
+            var courses = await wu.CourseRepo.GetAllCourses(!includeModules, action ,filter);
             var model = mapper.Map<IEnumerable<CourseDto>>(courses);
 
             return Ok(model);
@@ -51,6 +51,9 @@ namespace LMS.API.Controllers
 
             return course;
         }
+
+
+
 
         // PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -1,7 +1,10 @@
-﻿using LMS.Core.Entities;
+﻿using AutoMapper.QueryableExtensions;
+using LMS.Core.Entities;
 using LMS.Core.IRepo;
 using LMS.Data.Data;
+using Microsoft.Azure.ActiveDirectory.GraphClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,31 +28,41 @@ namespace LMS.Data.Repos
             await db.AddAsync(t);
         }
 
-        public async Task<IEnumerable<Course>> GetAllCourses(bool include, string name, string date, string filter)
+        public async Task<IEnumerable<Course>> GetAllCourses(bool include, string action, PaginationFilter filter)
         {
-            if (name == "title")
+            IEnumerable<Course> courses;
+            if (action == "title")
             {
-                return include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.Title).ToListAsync() :
-                            await db.Courses.OrderBy(e => e.Title).ToListAsync(); ;
+                courses = include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.Title).ToListAsync() :
+                           await db.Courses.OrderBy(e => e.Title).ToListAsync();
 
             }
-            else if (date == "date")
+            else if (action == "date")
             {
-                return include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.StartDate).ToListAsync() :
+                courses = include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.StartDate).ToListAsync() :
                             await db.Courses.OrderBy(e => e.StartDate).ToListAsync(); ;
             }
-            else if(filter != null)
+            else if (action != null)
             {
-                return include ? await db.Courses.Include(m => m.Modules).Where(c=> c.Title.StartsWith(filter)).ToListAsync() :
-                            await db.Courses.Where(c => c.Title.StartsWith(filter)).ToListAsync(); ;
+                courses = include ? await db.Courses.Include(m => m.Modules).Where(c => c.Title.StartsWith(action)).ToListAsync() :
+                            await db.Courses.Where(c => c.Title.StartsWith(action)).ToListAsync(); ;
             }
             else
             {
                 //var courses = await db.Courses.Include(m => m.Modules).ToListAsync();
-                return include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
+                courses = include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
                                  await db.Courses.ToListAsync();
             }
+
+            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+            var pagedData = courses
+               .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+               .Take(validFilter.PageSize).ToList();
+            var totalRecords = await db.Courses.CountAsync();
+            return pagedData;
         }
+
+
 
         public async Task<Course> GetCourse(int? Id)
         {
@@ -80,5 +93,7 @@ namespace LMS.Data.Repos
             var exists = db.Courses.Any(e => e.Title == title);
             return exists;
         }
+
     }
 }
+
