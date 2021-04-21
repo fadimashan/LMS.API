@@ -19,10 +19,10 @@ namespace LMS.Data.Data
             using var db = new LMSAPIContext(services.GetRequiredService<DbContextOptions<LMSAPIContext>>());
 
             faker = new Faker();
-            courses = GetCourses(5);
 
             if (!await db.Courses.AnyAsync())
             {
+            courses = GetCourses(5);
                 foreach (var item in courses)
                 {
                     await db.Courses.AddAsync(item);
@@ -32,9 +32,9 @@ namespace LMS.Data.Data
             }
             courses = await db.Courses.ToListAsync();
 
-            modules = GetModules(10);
             if (!await db.Modules.AnyAsync())
             {
+            modules = GetModules(10);
 
                 foreach (var item in modules)
                 {
@@ -78,7 +78,7 @@ namespace LMS.Data.Data
             for (int i = 0; i < num; i++)
             {
                // int courseid = (i != num - 1) ? faker.Random.Int(listOfId[0], listOfId.Count) : listOfId[0];
-                int courseid = (i != num - 1) ? faker.Random.ListItem(listOfId) : listOfId[0];
+               int courseid = (i != num - 1) ? faker.Random.ListItem(listOfId) : listOfId[0];
                // var newcourseid = courseid > courses.Count ? faker.Random.Int(0, courses.Count) : courseid;
 
                 var module = new Module()

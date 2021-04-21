@@ -1,20 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using LMS.Core.IRepo;
+using LMS.Data.Data;
+using LMS.Data.Repos;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using LMS.Data.Data;
-using LMS.Core.IRepo;
-using LMS.Data.Repos;
 
 namespace LMS.API
 {
@@ -31,7 +25,9 @@ namespace LMS.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers(opt => {
+
+            services.AddControllers(opt =>
+            {
                 opt.ReturnHttpNotAcceptable = true;
                 opt.SuppressAsyncSuffixInActionNames = false;
             })
@@ -58,7 +54,20 @@ namespace LMS.API
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LMS.API v1"));
+                
             }
+            else
+            {
+                //to hide the details in the production mode
+                app.UseExceptionHandler(appBuilder =>
+                appBuilder.Run(async context =>
+               {
+                   context.Response.StatusCode = 500;
+                   await context.Response.WriteAsync("An unexpected fault happend. Try again later");
+               }));
+            }
+
+          
 
             app.UseHttpsRedirection();
 

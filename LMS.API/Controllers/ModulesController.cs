@@ -70,7 +70,6 @@ namespace LMS.API.Controllers
             else
             {
                 return StatusCode(500);
-
             }
         }
 

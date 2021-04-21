@@ -1,5 +1,7 @@
 ﻿using AutoMapper.QueryableExtensions;
+using LMS.API.Controllers;
 using LMS.Core.Entities;
+using LMS.Core.Helper;
 using LMS.Core.IRepo;
 using LMS.Data.Data;
 using Microsoft.Azure.ActiveDirectory.GraphClient;
@@ -24,41 +26,37 @@ namespace LMS.Data.Repos
 
         public async Task AddAsync<T>(T t)
         {
-            //await db.Courses.AddAsync(course);
             await db.AddAsync(t);
         }
 
-        public async Task<IEnumerable<Course>> GetAllCourses(bool include, string action, PaginationFilter filter)
+        public async Task<PagedResult<Course>> GetAllAsync(PagingParameters paging)
         {
-            IEnumerable<Course> courses;
-            if (action == "title")
+
+            IQueryable<Course> courses;
+            if (paging.Action == "title")
             {
-                courses = include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.Title).ToListAsync() :
-                           await db.Courses.OrderBy(e => e.Title).ToListAsync();
+                courses = paging.IncludeModules ? db.Courses.Include(m => m.Modules).OrderBy(e => e.Title) :
+                          db.Courses.OrderBy(e => e.Title);
 
             }
-            else if (action == "date")
+            else if (paging.Action == "date")
             {
-                courses = include ? await db.Courses.Include(m => m.Modules).OrderBy(e => e.StartDate).ToListAsync() :
-                            await db.Courses.OrderBy(e => e.StartDate).ToListAsync(); ;
+                courses = paging.IncludeModules ? db.Courses.Include(m => m.Modules).OrderBy(e => e.StartDate) :
+                           db.Courses.OrderBy(e => e.StartDate);
             }
-            else if (action != null)
+            else if (paging.Action != null)
             {
-                courses = include ? await db.Courses.Include(m => m.Modules).Where(c => c.Title.StartsWith(action)).ToListAsync() :
-                            await db.Courses.Where(c => c.Title.StartsWith(action)).ToListAsync(); ;
+                courses = paging.IncludeModules ? db.Courses.Include(m => m.Modules).Where(c => c.Title.StartsWith(paging.Action)) :
+                           db.Courses.Where(c => c.Title.StartsWith(paging.Action));
             }
             else
             {
-                courses = include ? await db.Courses.Include(m => m.Modules).ToListAsync() :
-                                 await db.Courses.ToListAsync();
+                courses = paging.IncludeModules ? db.Courses.Include(m => m.Modules) :
+                                  db.Courses;
             }
 
-            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var pagedData = courses
-               .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-               .Take(validFilter.PageSize).ToList();
-            var totalRecords = await db.Courses.CountAsync();
-            return pagedData;
+            return await PagedResult<Course>.Get(courses, paging.PageNumber, paging.PageSize);
+
         }
 
 
@@ -93,6 +91,9 @@ namespace LMS.Data.Repos
             return exists;
         }
 
+     
+
+      
     }
 }
 

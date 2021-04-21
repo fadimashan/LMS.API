@@ -1,4 +1,6 @@
-﻿using LMS.Core.Entities;
+﻿using LMS.API.Controllers;
+using LMS.Core.Entities;
+using LMS.Core.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,6 @@ namespace LMS.Core.IRepo
     public interface ICourseRepo
     {
 
-        Task<IEnumerable<Course>> GetAllCourses(bool include, string action, PaginationFilter filter);
         Task<Course> GetCourse(int? Id);
         Task<bool> SaveAsync();
         Task AddAsync<T>(T course);
@@ -19,5 +20,6 @@ namespace LMS.Core.IRepo
         bool IsExists(int id);
         bool IsTitleExists(string title);
 
+        Task<PagedResult<Course>> GetAllAsync(PagingParameters paging);
     }
 }

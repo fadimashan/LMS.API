@@ -11,6 +11,9 @@ using LMS.Core.IRepo;
 using AutoMapper;
 using LMS.Core.Dto;
 using Microsoft.AspNetCore.JsonPatch;
+using LMS.Core.Helper;
+using System.Text.Json;
+using EventsApi.PagingExtensions;
 
 namespace LMS.API.Controllers
 {
@@ -28,13 +31,22 @@ namespace LMS.API.Controllers
         }
 
         // GET: api/Courses
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourse([FromQuery] PaginationFilter filter, [FromQuery] bool includeModules = false, string action = null )
+        [HttpGet(Name = "GetCourse")]
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourse([FromQuery] PagingParameters paging)
         {
-            var courses = await wu.CourseRepo.GetAllCourses(!includeModules, action ,filter);
-            var model = mapper.Map<IEnumerable<CourseDto>>(courses);
+            var courses = await wu.CourseRepo.GetAllAsync(paging);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(courses as PagedResultBase));
+            var model = mapper.Map<IEnumerable<CourseDto>>(courses.Data);
+            var pageLinks = courses.GetPageingLinks(Url, nameof(GetCourse));
 
-            return Ok(model);
+            var response = new
+            {
+                Welcome = "Hello World!",
+                Links = pageLinks,
+                Data = model
+            };
+
+            return Ok(response);
         }
 
         // GET: api/Courses/5
@@ -99,10 +111,10 @@ namespace LMS.API.Controllers
             return wu.CourseRepo.IsExists(id);
         }
 
-        [HttpPatch("{courseId}")]
-        public async Task<ActionResult<CourseDto>> PatchCourse(int courseId, JsonPatchDocument<CourseDto> patchDocument)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<CourseDto>> PatchCourse(int id, JsonPatchDocument<CourseDto> patchDocument)
         {
-            var course = await wu.CourseRepo.GetCourse(courseId);
+            var course = await wu.CourseRepo.GetCourse(id);
             if (course is null)
             {
                 ModelState.AddModelError("Title", "Course not available");
